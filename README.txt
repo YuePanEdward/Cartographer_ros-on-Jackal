@@ -88,27 +88,38 @@ For 2D Cartographer
     published_frame = "base_link", 
     -- On jackal, odom should be ok. I don't know why. 
     -- But for rosbag, use base_link as other frames are based on baselink
-     
+    
+    -- Option 1 (Recommended) If you want to use the odometry provided by the robot, then provide_odom_frame should be false and use_odometry = true,
+    -- odom_frame should be odom, in jackal, as the rostopic of ekf result is called /odometery/filtered, you need to remap it to odom in the launch file
     odom_frame = "odom",
     provide_odom_frame = false, 
     use_odometry = true,
-    -- If you want to use the odometry provided by the robot, then provide_odom_frame should be false.
-    -- odom_frame should be odom, in jackal, as the rostopic of ekf result is called /odometery/filtered, you need to remap it to odom in the launch file
     
+    -- Option 2 (Not Recommended) Use the odom provided by cartographer (the laser odometry), then provide_odom_frame should be true and use_odometry= false,
+    -- the second choice has some problem, which leads to the map frame seems like base_link. However, I don't know why.
+    -- odom_frame = "odom", (Not required)
+    provide_odom_frame = true, 
+    use_odometry = false,
+    
+    -- These settings can be keep as the original one
     publish_frame_projected_to_2d = false, 
     use_nav_sat = false,
     use_landmarks = false,
-    -- the second choice has some problem, which leads to the map frame seems like base_link
-  
-    num_laser_scans = 0,
-    num_multi_echo_laser_scans = 0,
+    
+2.Sensor setting
+    
+    num_laser_scans = 0, -- If you'd like to use laser (projected point cloud to a 2d plane), then this one should be 1. 
+    
+    num_multi_echo_laser_scans = 0, -- We do not use multi-echo laser
+    
     num_subdivisions_per_laser_scan = 1, 
     -- try changing this one and see what will happen, seems like nothing happened
     -- Originally, it's set to be 10.
    
-    num_point_clouds = 1,
-    lookup_transform_timeout_sec = 0.2,  --0.2
-    submap_publish_period_sec = 0.3,     --0.3 
+    num_point_clouds = 1, -- If you use point cloud, then it should be 1. Or it should be 0.
+    
+    lookup_transform_timeout_sec = 0.2,  --Originally 0.2. A waiting time threshold for tf transform error
+    submap_publish_period_sec = 0.3,     --Originally 0.3
     pose_publish_period_sec = 5e-3,      --5e-3
     trajectory_publish_period_sec = 30e-3, --20e-3
     rangefinder_sampling_ratio = 1.,
