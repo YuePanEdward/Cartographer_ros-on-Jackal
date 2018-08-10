@@ -67,8 +67,6 @@ For 2D Cartographer
 
 
 
-
-For 3D Cartographer
 MAP_BUILDER.use_trajectory_builder_2d = true
 
 TRAJECTORY_BUILDER_2D.min_range = 0.3
@@ -106,3 +104,4 @@ TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase
 TRAJECTORY_BUILDER_2D.submaps.num_range_data = 1 -- Decrease
 TRAJECTORY_BUILDER_2D.max_range = 10. -- Decrease
 
+   For 3D Cartographer
