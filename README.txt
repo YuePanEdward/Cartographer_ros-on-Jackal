@@ -67,41 +67,81 @@ For 2D Cartographer
 
 
 
-MAP_BUILDER.use_trajectory_builder_2d = true
+ num_laser_scans = 0,
+    num_multi_echo_laser_scans = 0,
+    num_subdivisions_per_laser_scan = 1, --try changing this one and see what will happen, seems like nothing happened
+    num_point_clouds = 1,
+    lookup_transform_timeout_sec = 0.2,  --0.2
+    submap_publish_period_sec = 0.3,     --0.3 
+    pose_publish_period_sec = 5e-3,      --5e-3
+    trajectory_publish_period_sec = 30e-3, --20e-3
+    rangefinder_sampling_ratio = 1.,
+    odometry_sampling_ratio = 0.1, --0.5 or you will meet some check failed:data.time>std::prev error but I don't know why.
+    fixed_frame_pose_sampling_ratio = 1., --0.5
+    imu_sampling_ratio = 1.,
+    landmarks_sampling_ratio = 1.,
+  }
+  
+  MAP_BUILDER.use_trajectory_builder_2d = true
+  MAP_BUILDER.num_background_threads = 6 -- Increase up to number of cores
+  --
+  TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1 --10  Very Important to solve the problem of rotating map
+  --
+  --******************BY DEFAULT( those set in map_builder.lua and trajectory_builder.lua )***********************************
+  
+  --TRAJECTORY_BUILDER.pure_localization=false -- not pure_localiztion
+  
+  --TRAJECTORY_BUILDER_2D.min_range = 0.3 --0.3
+  --TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
+  TRAJECTORY_BUILDER_2D.use_imu_data = true --important, if this one is true ,then you need to set the track frame as imu, it's kvh_link here. Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
 
-TRAJECTORY_BUILDER_2D.min_range = 0.3
-TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
-TRAJECTORY_BUILDER_2D.use_imu_data = false
-TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
---TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
---TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
---TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 2e2
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 4e2
+   
+  ------------------SCAN MATCHER (FRONT END----LOCAL MAP----Lidar Odometry)
+  --There are two kind of scan matcher solution. One is CSM , another one is the optimizer Ceres given by Google. Ceres is set as default
+  ------CSM parameter
+  --TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = false --true
+  --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
+  --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
+  --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rsudo apt-get remove ros-kinetic-rtabmap ros-kinetic-rtabmap-rosotation_delta_cost_weight = 10.
+  
+  ------Ceres parameter
+  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10 --10
+  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight =40 ---4e2 originally , increase it for avoiding new submaps being added at an angle
+  
+  
+  --POSE GRAPH problem, refer to Cartographer tuning file 
+  POSE_GRAPH.optimization_problem.huber_scale = 5e2 --10
+  POSE_GRAPH.optimization_problem.odometry_rotation_weight= 0
+  
+  -----------------TUNE THESE PARAMETERS FOR LOW LATENCY-------------------------------
+  
+  ------------Global SLAM (Graph optimization by Ceres, BACK END)------------
+  POSE_GRAPH.optimize_every_n_nodes = 320 -- Decrease --original 1 | 90 (it should not be too large or there will be a lot of problem)
+  POSE_GRAPH.global_sampling_ratio = 0.0001 -- Decrease 0.00001 originally (X)
+  POSE_GRAPH.constraint_builder.sampling_ratio = 0.03 -- Decrease 0.0001 (X)
+  POSE_GRAPH.constraint_builder.min_score = 0.62 -- Increase 0.8 
+  --POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase ,orginally 20 (X)
+  POSE_GRAPH.optimization_problem.ceres_solver_options.max_num_iterations = 10
+  POSE_GRAPH.constraint_builder.global_localization_min_score = 0.66
+  --TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease
+  
+  ---------Global/Local SLAM(FIND LOOP CLOSURE)---------
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 40 -- Decrease  originally 50
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 2.0 -- Increase 1.8
+  --TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase
+  --TRAJECTORY_BUILDER_2D.submaps.resolution = 0.05 -- Increase
+  TRAJECTORY_BUILDER_2D.submaps.num_range_data = 80 -- Decrease   (important,control submap number)
+  --TRAJECTORY_BUILDER_2D.max_range = 15. -- Decrease
+  
+  -------------------------------------------------------------------------------------
+  
+  return options
+  -----you need to visualize it through rviz on a ubuntu14.04 indigo system or the typename of trajectory or other arrays would mess up
 
-POSE_GRAPH.optimization_problem.huber_scale = 1e2
 
------------------TUNE THESE PARAMETERS FOR LOW LATENCY-------------------------------
-
-------------Global SLAM------------
-POSE_GRAPH.optimize_every_n_nodes = 1 -- Decrease
-MAP_BUILDER.num_background_threads = 4 -- Increase up to number of cores
-POSE_GRAPH.global_sampling_ratio = 0.00001 -- Decrease
-POSE_GRAPH.constraint_builder.sampling_ratio = 0.0001 -- Decrease
-POSE_GRAPH.constraint_builder.min_score = 0.75 -- Increase
-POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease
-
----------Global/Local SLAM---------
-TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease
-TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease
-TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase
-TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 50 -- Decrease
-TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease
-TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 1.8 -- Increase
-TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase
---TRAJECTORY_BUILDER_2D.submaps.resolution=0.05 -- Increase
-TRAJECTORY_BUILDER_2D.submaps.num_range_data = 1 -- Decrease
-TRAJECTORY_BUILDER_2D.max_range = 10. -- Decrease
 
    For 3D Cartographer
