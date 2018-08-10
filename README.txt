@@ -10,18 +10,70 @@ Computer: Desktop/Laptop i5+ Ubuntu 14.04 with ROS Indigo
 ------------------------------------------------------------------------------------------------------
 Install Cartographer
 
+There are three packages to be install : ceres slover (a graph optimizer provided by google) cartographer and cartographer_ros
 
+1. Install all the dependency
+sudo apt-get install -y google-mock libboost-all-dev  libeigen3-dev libgflags-dev libgoogle-glog-dev liblua5.2-dev libprotobuf-dev  libsuitesparse-dev libwebp-dev ninja-build protobuf-compiler python-sphinx  ros-indigo-tf2-eigen libatlas-base-dev libsuitesparse-dev liblapack-dev
 
+   Method and codes provided by hitcm (a phd student in HIT)
+2. Install ceres slover 1.11
+ git clone https://github.com/hitcm/ceres-solver-1.11.0.git
+ cd ceres-solver-1.11.0/build
+ cmake ..
+ make –j
+ sudo make install
+ 
+3.Install cartographer
+ git clone https://github.com/hitcm/cartographer.git
+ cd cartographer/build
+ cmake .. -G Ninja
+ ninja
+ ninja test
+ sudo ninja install
+ 
+4.Install cartographer_ros 
+ git clone https://github.com/hitcm/cartographer_ros.git 
+ cd ~/catkin_ws
+ catkin_make
 
+ Another method provided by Google officially
+  Refer to this website: cartographer   http://google-cartographer.readthedocs.io/en/latest/index.html
+                         cartographer_ros   https://google-cartographer-ros.readthedocs.io/en/latest/
 
+Building &Installation of it 
 
+# Install wstool and rosdep.
+sudo apt-get update
+sudo apt-get install -y python-wstool python-rosdep ninja-build
 
+# Create a new workspace in 'catkin_ws'.
+mkdir catkin_ws
+cd catkin_ws
+wstool init src
 
+# Merge the cartographer_ros.rosinstall file and fetch code for dependencies.
+wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
+wstool update -t src
 
+# Install proto3.
+src/cartographer/scripts/install_proto3.sh
+
+# Install deb dependencies.
+# The command 'sudo rosdep init' will print an error if you have already
+# executed it since installing ROS. This error can be ignored.
+sudo rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+
+# Build and install.
+catkin_make_isolated --install --use-ninja
+source install_isolated/setup.bash
 
 
 -------------------------------------------------------------------------------------------------------
 Tuning parameters
+Some of this part should refer to offical readme file provided by Google:  https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
+
 For 2D Cartographer
 
 1.Frames
