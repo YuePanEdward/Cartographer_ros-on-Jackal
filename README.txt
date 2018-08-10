@@ -120,41 +120,31 @@ For 2D Cartographer
     
     lookup_transform_timeout_sec = 0.2,  --Originally 0.2. A waiting time threshold for tf transform error
     submap_publish_period_sec = 0.3,     --Originally 0.3
-    pose_publish_period_sec = 5e-3,      --5e-3
-    trajectory_publish_period_sec = 30e-3, --20e-3
+    pose_publish_period_sec = 5e-3,      --Originally 5e-3
+    trajectory_publish_period_sec = 30e-3, --Originally 20e-3
     rangefinder_sampling_ratio = 1.,
-    odometry_sampling_ratio = 0.1, --0.5 or you will meet some check failed:data.time>std::prev error but I don't know why.
+    odometry_sampling_ratio = 0.1, --Originally 0.5.
+    --In my opinion, You need to set it to be 0.1 or you will meet some check failed:data.time>std::prev error but I don't know why.
     fixed_frame_pose_sampling_ratio = 1., --0.5
     imu_sampling_ratio = 1.,
     landmarks_sampling_ratio = 1.,
 
 
+3. SLAM paramter tuning
+Two lua files are included, 
+include "map_builder.lua"
+include "trajectory_builder.lua"
+They act as the default setting of parameters, if you want to change some of them, you can specify them downward.
 
- num_laser_scans = 0,
-    num_multi_echo_laser_scans = 0,
-    num_subdivisions_per_laser_scan = 1, --try changing this one and see what will happen, seems like nothing happened
-    num_point_clouds = 1,
-    lookup_transform_timeout_sec = 0.2,  --0.2
-    submap_publish_period_sec = 0.3,     --0.3 
-    pose_publish_period_sec = 5e-3,      --5e-3
-    trajectory_publish_period_sec = 30e-3, --20e-3
-    rangefinder_sampling_ratio = 1.,
-    odometry_sampling_ratio = 0.1, --0.5 or you will meet some check failed:data.time>std::prev error but I don't know why.
-    fixed_frame_pose_sampling_ratio = 1., --0.5
-    imu_sampling_ratio = 1.,
-    landmarks_sampling_ratio = 1.,
-  }
+  MAP_BUILDER.use_trajectory_builder_2d = true  -- for 2d cartographer
+  MAP_BUILDER.num_background_threads = 6 -- Increase up to number of cores of your computer
+
+  TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1 --Originally 10  
+  --Set a small number.
+  --Very Important to solve the problem of map messing up when rotating
   
-  MAP_BUILDER.use_trajectory_builder_2d = true
-  MAP_BUILDER.num_background_threads = 6 -- Increase up to number of cores
-  --
-  TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1 --10  Very Important to solve the problem of rotating map
-  --
-  --******************BY DEFAULT( those set in map_builder.lua and trajectory_builder.lua )***********************************
+  --TRAJECTORY_BUILDER.pure_localization=false -- If you've already build the map, you can use this pure_localiztion mode, which may give you better result of pose.
   
-  --TRAJECTORY_BUILDER.pure_localization=false -- not pure_localiztion
-  
-  --TRAJECTORY_BUILDER_2D.min_range = 0.3 --0.3
   --TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
   TRAJECTORY_BUILDER_2D.use_imu_data = true --important, if this one is true ,then you need to set the track frame as imu, it's kvh_link here. Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
 
