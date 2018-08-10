@@ -131,6 +131,7 @@ For 2D Cartographer
 
 
 3. SLAM paramter tuning
+
 Two lua files are included, 
 include "map_builder.lua"
 include "trajectory_builder.lua"
@@ -143,28 +144,35 @@ They act as the default setting of parameters, if you want to change some of the
   --Set a small number.
   --Very Important to solve the problem of map messing up when rotating
   
-  --TRAJECTORY_BUILDER.pure_localization=false -- If you've already build the map, you can use this pure_localiztion mode, which may give you better result of pose.
+  TRAJECTORY_BUILDER.pure_localization=false -- If you've already build the map, you can use this pure_localiztion mode, which may give you better result of pose.
   
-  --TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
-  TRAJECTORY_BUILDER_2D.use_imu_data = true --important, if this one is true ,then you need to set the track frame as imu, it's kvh_link here. Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
-
+  TRAJECTORY_BUILDER_2D.use_imu_data = true --important
+  -- If this one is true ,then you need to set the track frame as imu (it's kvh_link in our case). Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
    
   ------------------SCAN MATCHER (FRONT END----LOCAL MAP----Lidar Odometry)
-  --There are two kind of scan matcher solution. One is CSM , another one is the optimizer Ceres given by Google. Ceres is set as default
-  ------CSM parameter
+ 
+ --There are two kind of scan matcher solution.
+ One is CSM (Correlated Scan Matching 2D: First, do the gridding. Then a gaussian score field can be calculated. Finally, a transformation resulting in the highest score is regarded as the optimal pose transformation in this case) .
+ Another one is the optimizer Ceres given by Google. Ceres is set as default
+ 
+ -------CSM parameter
   --TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = false --true
   --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
   --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
-  --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rsudo apt-get remove ros-kinetic-rtabmap ros-kinetic-rtabmap-rosotation_delta_cost_weight = 10.
+  --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.
   
   ------Ceres parameter
-  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10 --10
-  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight =40 ---4e2 originally , increase it for avoiding new submaps being added at an angle
-  
+  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10 ---10 originally
+  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight =40     ---40 originally 
+  -- Two important paramters
+  -- Determine how the map would be robust to translation and rotation.
+  -- The larger these parameters are, the more likely cartographer would avoid new submaps being added at translation/rotation
   
   --POSE GRAPH problem, refer to Cartographer tuning file 
-  POSE_GRAPH.optimization_problem.huber_scale = 5e2 --10
-  POSE_GRAPH.optimization_problem.odometry_rotation_weight= 0
+  POSE_GRAPH.optimization_problem.huber_scale = 50 --10 originally
+  POSE_GRAPH.optimization_problem.odometry_rotation_weight= 0 
+  -- Set it to be 0 for trusting only the laser odometery during rotation. This is due to the poor performance of wheeled odom and imu for rotation.
+  
   
   -----------------TUNE THESE PARAMETERS FOR LOW LATENCY-------------------------------
   
