@@ -69,8 +69,15 @@ rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
 catkin_make_isolated --install --use-ninja
 source install_isolated/setup.bash
 
+-----------------------------------------------------------------------------------------------------
+Cartographer Framework
+Cartographer can be seen as two separate, but related systems. The first one is local SLAM (sometimes also called frontend). Its job is to build a locally consistent set of submaps and tie them together, but it will drift over time. Most of its options can be found in trajectory_builder_2d.lua for 2D and trajectory_builder_3d.lua for 3D.
 
--------------------------------------------------------------------------------------------------------
+The other system is global SLAM (sometimes called the backend). It runs in background threads and its main job is to find loop closure constraints. It does that by scan-matching scans against submaps. It also incorporates other sensor data to get a higher level view and identify the most consistent global solution. In 3D, it also tries to find the direction of gravity. Most of its options can be found in pose_graph.lua
+
+On a higher abstraction, the job of local SLAM is to generate good submaps and the job of global SLAM is to tie them most consistently together.
+------------------------------------------------------------------------------------------------------
+
 Tuning parameters
 Some of this part should refer to offical readme file provided by Google:  https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
 
