@@ -174,33 +174,36 @@ They act as the default setting of parameters, if you want to change some of the
   -- Set it to be 0 for trusting only the laser odometery during rotation. This is due to the poor performance of wheeled odom and imu for rotation.
   
   
-  -----------------TUNE THESE PARAMETERS FOR LOW LATENCY-------------------------------
+  -----TUNE THESE PARAMETERS FOR LOW LATENCY (More likey to be a online algorithm)-----
   
-  ------------Global SLAM (Graph optimization by Ceres, BACK END)------------
-  POSE_GRAPH.optimize_every_n_nodes = 320 -- Decrease --original 1 | 90 (it should not be too large or there will be a lot of problem)
-  POSE_GRAPH.global_sampling_ratio = 0.0001 -- Decrease 0.00001 originally (X)
-  POSE_GRAPH.constraint_builder.sampling_ratio = 0.03 -- Decrease 0.0001 (X)
-  POSE_GRAPH.constraint_builder.min_score = 0.62 -- Increase 0.8 
-  --POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase ,orginally 20 (X)
+  ----------------Global SLAM (Graph optimization by Ceres, BACK END)------------------
+  POSE_GRAPH.optimize_every_n_nodes = 320     
+  -- Decrease for low latency --original 1 | 90 (It should not be too large or there may be some problem)
+  
+  POSE_GRAPH.global_sampling_ratio = 0.0001 -- Decrease for low latency, 0.00001 originally
+  POSE_GRAPH.constraint_builder.sampling_ratio = 0.03 -- Decrease for low latency, 0.0001 originally
+  POSE_GRAPH.constraint_builder.min_score = 0.62 -- Increase for low latency, 0.8 origianlly 
+  POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase for low latency, 20 originally 
   POSE_GRAPH.optimization_problem.ceres_solver_options.max_num_iterations = 10
   POSE_GRAPH.constraint_builder.global_localization_min_score = 0.66
-  --TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease
+  TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease for low latency
   
-  ---------Global/Local SLAM(FIND LOOP CLOSURE)---------
-  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease
-  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease
-  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase
-  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 40 -- Decrease  originally 50
-  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease
-  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 2.0 -- Increase 1.8
-  --TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase
-  --TRAJECTORY_BUILDER_2D.submaps.resolution = 0.05 -- Increase
-  TRAJECTORY_BUILDER_2D.submaps.num_range_data = 80 -- Decrease   (important,control submap number)
-  --TRAJECTORY_BUILDER_2D.max_range = 15. -- Decrease
+  -----------------Global/Local SLAM(FIND LOOP CLOSURE)---------------------
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease for low latency
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
+  --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase for low latency
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 40 -- Decrease for low latency, 50 originally
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
+  --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 2.0 -- Increase for low latency, 1.8 originally
+  --TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase for low latency
+  --TRAJECTORY_BUILDER_2D.submaps.resolution = 0.05 -- Increase for low latency
+  TRAJECTORY_BUILDER_2D.submaps.num_range_data = 80 -- Decrease for low latency   (Important, control submap number, it means one submap per 80 range data here)
+  --TRAJECTORY_BUILDER_2D.max_range = 15. -- Decrease for low latency
   
   -------------------------------------------------------------------------------------
   
   return options
+  
   -----you need to visualize it through rviz on a ubuntu14.04 indigo system or the typename of trajectory or other arrays would mess up
 
 
