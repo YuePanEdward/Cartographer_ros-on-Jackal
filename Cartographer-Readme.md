@@ -54,32 +54,42 @@ sudo apt-get install -y google-mock libboost-all-dev  libeigen3-dev libgflags-de
 ### 1.Install wstool and rosdep.
 
 > sudo apt-get update
+
 > sudo apt-get install -y python-wstool python-rosdep ninja-build
 
 ### 2.Create a new workspace in 'catkin_ws'.
 
 > mkdir catkin_ws
+
 > cd catkin_ws
+
 > wstool init src
 
 ### 3.Merge the cartographer_ros.rosinstall file and fetch code for dependencies.
-wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
-wstool update -t src
+
+> wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
+
+> wstool update -t src
 
 ### 4.Install proto3.
-src/cartographer/scripts/install_proto3.sh
+
+> src/cartographer/scripts/install_proto3.sh
 
 ### 5.Install deb dependencies.
 The command 'sudo rosdep init' will print an error if you have already
 executed it since installing ROS. This error can be ignored.
 
-sudo rosdep init
-rosdep update
-rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+> sudo rosdep init
+
+> rosdep update
+
+> rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
 
 ### 6.Build and install.
-catkin_make_isolated --install --use-ninja
-source install_isolated/setup.bash
+
+> catkin_make_isolated --install --use-ninja
+
+> source install_isolated/setup.bash
 
 -----------------------------------------------------------------------------------------------------
 
