@@ -53,14 +53,14 @@ sudo apt-get install -y google-mock libboost-all-dev  libeigen3-dev libgflags-de
 
 ### 1.Install wstool and rosdep.
 
-sudo apt-get update
-sudo apt-get install -y python-wstool python-rosdep ninja-build
+> sudo apt-get update
+> sudo apt-get install -y python-wstool python-rosdep ninja-build
 
 ### 2.Create a new workspace in 'catkin_ws'.
 
-mkdir catkin_ws
-cd catkin_ws
-wstool init src
+> mkdir catkin_ws
+> cd catkin_ws
+> wstool init src
 
 ### 3.Merge the cartographer_ros.rosinstall file and fetch code for dependencies.
 wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
@@ -157,80 +157,73 @@ Some of this part should refer to offical readme file provided by Google:  https
 
 
 ### 3. SLAM paramter tuning
-   
-   
-  Two lua files are included, 
-  include "map_builder.lua"
-  include "trajectory_builder.lua"
-  They act as the default setting of parameters, if you want to change some of them, you can specify them downward.
-
-   MAP_BUILDER.use_trajectory_builder_2d = true  -- for 2d cartographer
-   MAP_BUILDER.num_background_threads = 6 -- Increase up to number of cores of your computer
-
-   TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1 --Originally 10  
-   --Set a small number.
-   --Very Important to solve the problem of map messing up when rotating
-  
-   TRAJECTORY_BUILDER.pure_localization=false -- If you've already build the map, you can use this pure_localiztion mode, which may give you better result of pose.
-  
-   TRAJECTORY_BUILDER_2D.use_imu_data = true --important
-   -- If this one is true ,then you need to set the track frame as imu (it's kvh_link in our case). Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
-   
-   ------------------SCAN MATCHER (FRONT END----LOCAL MAP----Lidar Odometry)
  
-   --There are two kind of scan matcher solution.
-   --One is CSM (Correlated Scan Matching 2D: First, do the gridding. Then a gaussian score field can be calculated. Finally, a ---transformation resulting in the highest score is regarded as the optimal pose transformation in this case) .
-   --Another one is the optimizer Ceres given by Google. Ceres is set as default
+   Two lua files are included, 
+   include "map_builder.lua"
+   include "trajectory_builder.lua"
+   They act as the default setting of parameters, if you want to change some of them, you can specify them downward.
+
+    MAP_BUILDER.use_trajectory_builder_2d = true  -- for 2d cartographer
+    MAP_BUILDER.num_background_threads = 6 -- Increase up to number of cores of your computer
+    TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1 --Originally 10  
+    --Set a small number.
+    --Very Important to solve the problem of map messing up when rotating
+    
+    TRAJECTORY_BUILDER.pure_localization=false -- If you've already build the map, you can use this pure_localiztion mode, which may give you better result of pose.
+    TRAJECTORY_BUILDER_2D.use_imu_data = true --important
+    -- If this one is true ,then you need to set the track frame as imu (it's kvh_link in our case). Besides, ium is not neccessary for 2d slam but neccessary for 3d cases
+    
+    ------------------SCAN MATCHER (FRONT END----LOCAL MAP----Lidar Odometry)
+    --There are two kind of scan matcher solution.
+    --One is CSM (Correlated Scan Matching 2D: First, do the gridding. Then a gaussian score field can be calculated. Finally, a ---transformation resulting in the highest score is regarded as the optimal pose transformation in this case) .
+    --Another one is the optimizer Ceres given by Google. Ceres is set as default
+   
+    -------CSM parameter
+    --TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = false --true
+    --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
+    --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
+    --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.
+    
+    ------Ceres parameter
+    TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10 ---10 originally
+    TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight =40     ---40 originally 
+    -- Two important paramters
+    -- Determine how the map would be robust to translation and rotation.
+    -- The larger these parameters are, the more likely cartographer would avoid new submaps being added at translation/rotation
+    
+    --POSE GRAPH problem, refer to Cartographer tuning file 
+    POSE_GRAPH.optimization_problem.huber_scale = 50 --10 originally
+    POSE_GRAPH.optimization_problem.odometry_rotation_weight= 0 
+    -- Set it to be 0 for trusting only the laser odometery during rotation. This is due to the poor performance of wheeled odom and imu for rotation.
+    
+    -----TUNE THESE PARAMETERS FOR LOW LATENCY (More likey to be a online algorithm)-----
+    ----------------Global SLAM (Graph optimization by Ceres, BACK END)------------------
+    POSE_GRAPH.optimize_every_n_nodes = 320     
+    -- Decrease for low latency --original 1 | 90 (It should not be too large or there may be some problem)
+    POSE_GRAPH.global_sampling_ratio = 0.0001 -- Decrease for low latency, 0.00001 originall
+    POSE_GRAPH.constraint_builder.sampling_ratio = 0.03 -- Decrease for low latency, 0.0001 originally
+    POSE_GRAPH.constraint_builder.min_score = 0.62 -- Increase for low latency, 0.8 origianlly
+    POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase for low latency, 20 originally
+    POSE_GRAPH.optimization_problem.ceres_solver_options.max_num_iterations = 10
+    POSE_GRAPH.constraint_builder.global_localization_min_score = 0.66
+    TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease for low latency
+    
+    -----------------Global/Local SLAM(FIND LOOP CLOSURE)---------------------
+    --Set as default
+    --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease for low latency
+    --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
+    --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase for low latency
+    --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 40 -- Decrease for low latency, 50 originally
+    --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
+    --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 2.0 -- Increase for low latency, 1.8 originally
+    --TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase for low latency
+    --TRAJECTORY_BUILDER_2D.submaps.resolution = 0.05 -- Increase for low latency
+    TRAJECTORY_BUILDER_2D.submaps.num_range_data = 80 -- Decrease for low latency   (Important, control submap number, it means one submap per 80 range data here)
+    --TRAJECTORY_BUILDER_2D.max_range = 15. -- Decrease for low latency
+    
+    -------------------------------------------------------------------------------------
+    -----Attention! you need to visualize it through rviz on a ubuntu14.04 indigo system or the typename of trajectory or other arrays would mess up
+   
  
-   -------CSM parameter
-   --TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = false --true
-   --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
-   --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
-   --TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.
-  
-   ------Ceres parameter
-   TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10 ---10 originally
-   TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight =40     ---40 originally 
-   -- Two important paramters
-   -- Determine how the map would be robust to translation and rotation.
-   -- The larger these parameters are, the more likely cartographer would avoid new submaps being added at translation/rotation
-  
-   --POSE GRAPH problem, refer to Cartographer tuning file 
-   POSE_GRAPH.optimization_problem.huber_scale = 50 --10 originally
-   POSE_GRAPH.optimization_problem.odometry_rotation_weight= 0 
-   -- Set it to be 0 for trusting only the laser odometery during rotation. This is due to the poor performance of wheeled odom and imu for rotation.
-  
-  
-   -----TUNE THESE PARAMETERS FOR LOW LATENCY (More likey to be a online algorithm)-----
-  
-   ----------------Global SLAM (Graph optimization by Ceres, BACK END)------------------
-   POSE_GRAPH.optimize_every_n_nodes = 320     
-   -- Decrease for low latency --original 1 | 90 (It should not be too large or there may be some problem)
-  
-   POSE_GRAPH.global_sampling_ratio = 0.0001 -- Decrease for low latency, 0.00001 originally
-   POSE_GRAPH.constraint_builder.sampling_ratio = 0.03 -- Decrease for low latency, 0.0001 originally
-   POSE_GRAPH.constraint_builder.min_score = 0.62 -- Increase for low latency, 0.8 origianlly 
-   POSE_GRAPH.global_constraint_search_after_n_seconds = 20 -- Increase for low latency, 20 originally 
-   POSE_GRAPH.optimization_problem.ceres_solver_options.max_num_iterations = 10
-   POSE_GRAPH.constraint_builder.global_localization_min_score = 0.66
-   TRAJECTORY_BUILDER_2D.ceres_scan_matcher.ceres_solver_options.max_num_iterations = 5 -- Decrease for low latency
-  
-   -----------------Global/Local SLAM(FIND LOOP CLOSURE)---------------------
-   --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 100 -- Decrease for low latency
-   --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
-   --TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 1.0 -- Increase for low latency
-   --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.min_num_points = 40 -- Decrease for low latency, 50 originally
-   --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_range = 10. -- Decrease for low latency
-   --TRAJECTORY_BUILDER_2D.loop_closure_adaptive_voxel_filter.max_length = 2.0 -- Increase for low latency, 1.8 originally
-   --TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05 -- Increase for low latency
-   --TRAJECTORY_BUILDER_2D.submaps.resolution = 0.05 -- Increase for low latency
-   TRAJECTORY_BUILDER_2D.submaps.num_range_data = 80 -- Decrease for low latency   (Important, control submap number, it means one submap per 80 range data here)
-   --TRAJECTORY_BUILDER_2D.max_range = 15. -- Decrease for low latency
-  
-  -------------------------------------------------------------------------------------
-  
-  -----you need to visualize it through rviz on a ubuntu14.04 indigo system or the typename of trajectory or other arrays would mess up
 
-
-
-   For 3D Cartographer
+  ## For 3D Cartographer
