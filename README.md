@@ -1,29 +1,34 @@
 # Carographer_ros-on-Jackal
+
 # Documnet for parameter tuning
 
 ------------------------------------------------------------------------------------------------------
-Prepare:
+# Prepare:
+
 Robot: Jackal (Clearpath) 
+
 Lidar: Velodyne VLP16
+
 IMU:   KVH1750
+
 Computer: Desktop/Laptop i5+ Ubuntu 14.04 with ROS Indigo
 ------------------------------------------------------------------------------------------------------
-Install Cartographer
+# Install Cartographer
 
 There are three packages to be install : ceres slover (a graph optimizer provided by google) cartographer and cartographer_ros
 
-1. Install all the dependency
+### 1. Install all the dependency
 sudo apt-get install -y google-mock libboost-all-dev  libeigen3-dev libgflags-dev libgoogle-glog-dev liblua5.2-dev libprotobuf-dev  libsuitesparse-dev libwebp-dev ninja-build protobuf-compiler python-sphinx  ros-indigo-tf2-eigen libatlas-base-dev libsuitesparse-dev liblapack-dev
 
    Method and codes provided by hitcm (a phd student in HIT)
-2. Install ceres slover 1.11
+### 2. Install ceres slover 1.11
  git clone https://github.com/hitcm/ceres-solver-1.11.0.git
  cd ceres-solver-1.11.0/build
  cmake ..
  make –j
  sudo make install
  
-3.Install cartographer
+### 3.Install cartographer
  git clone https://github.com/hitcm/cartographer.git
  cd cartographer/build
  cmake .. -G Ninja
@@ -31,7 +36,7 @@ sudo apt-get install -y google-mock libboost-all-dev  libeigen3-dev libgflags-de
  ninja test
  sudo ninja install
  
-4.Install cartographer_ros 
+### 4.Install cartographer_ros 
  git clone https://github.com/hitcm/cartographer_ros.git 
  cd ~/catkin_ws
  catkin_make
