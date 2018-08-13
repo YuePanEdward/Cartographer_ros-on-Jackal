@@ -76,6 +76,10 @@ Cartographer can be seen as two separate, but related systems. The first one is 
 The other system is global SLAM (sometimes called the backend). It runs in background threads and its main job is to find loop closure constraints. It does that by scan-matching scans against submaps. It also incorporates other sensor data to get a higher level view and identify the most consistent global solution. In 3D, it also tries to find the direction of gravity. Most of its options can be found in pose_graph.lua
 
 On a higher abstraction, the job of local SLAM is to generate good submaps and the job of global SLAM is to tie them most consistently together.
+
+Comparison With other L-SLAM Algorithm (Gmapping, Hector SLAM)
+https://blog.csdn.net/u010811078/article/details/61200060 (in Chinese)
+
 ------------------------------------------------------------------------------------------------------
 
 Tuning parameters
