@@ -25,7 +25,7 @@
       output="screen">
     <remap from="points2" to="/velodyne_points"/>
     <remap from="laser" to="/scan"/>
-    <remap from="odom" to="/odometry/filtered"/>
+    <remap from="odom" to="/odometry/ekf_wo_kvh"/> <!--change it according to which sensor you'd like to intergrate-->
     <remap from="imu" to="/kvh_1750_imu/imu"/>
   </node>
   
