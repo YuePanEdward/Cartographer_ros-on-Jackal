@@ -1,0 +1,19 @@
+<launch>
+
+<!--time sychronize problem -->
+<param name="/use_sim_time" value="true"/>
+
+<!--
+<node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_wo_imu">
+<rosparam command="load" file="$(find jackal_control)/config/ekf_wo_imu.yaml"/>
+<remap from="odometry/filtered" to="/odometry/ekf_wo_imu"/>
+</node> 
+-->
+
+<node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_wo_kvh">
+<rosparam command="load" file="$(find jackal_control)/config/ekf_wo_kvh.yaml"/>
+<remap from="odometry/filtered" to="/odometry/ekf_wo_kvh"/>
+</node> 
+
+
+</launch>
