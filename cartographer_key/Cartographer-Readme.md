@@ -121,6 +121,7 @@ https://blog.csdn.net/u010811078/article/details/61200060 (in Chinese)
 # Tuning parameters
 Some of this part should refer to offical readme file provided by Google:  https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
 
+https://blog.csdn.net/nksjc/article/details/78927099
 
 ## For 2D Cartographer
 
