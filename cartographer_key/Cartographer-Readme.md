@@ -116,6 +116,10 @@ On a higher abstraction, the job of local SLAM is to generate good submaps and t
 Comparison With other L-SLAM Algorithm (Gmapping, Hector SLAM)
 https://blog.csdn.net/u010811078/article/details/61200060 (in Chinese)
 
+# How to save the map and get the trajectory?
+rosrun map_server map_saver -f xxxmap
+
+
 ------------------------------------------------------------------------------------------------------
 
 # Tuning parameters
