@@ -14,6 +14,12 @@ IMU:   KVH1750
 Computer: Desktop/Laptop i5+ Ubuntu 14.04 with ROS Indigo
 
 ------------------------------------------------------------------------------------------------------
+# Challenge: 
+Google Cartographer is a developing opensource package. Sometimes, developers would change something to improve its perfomance so some parameters' name may be changed after that. Sometimes you also need to retune those parameters. You gonna spend a lot of time on it to fully grasp it.
+
+On the other hand, it provides us more opportunity to dig inside the pacakage and do some secondary development based on it.
+
+------------------------------------------------------------------------------------------------------
 # Install Cartographer
 
  ## Method and codes provided by hitcm (a phd student in HIT)
@@ -107,6 +113,12 @@ executed it since installing ROS. This error can be ignored.
 -----------------------------------------------------------------------------------------------------
 
 # Cartographer Framework
+Refer to these two official wiki webiste:
+
+1.Cartographer https://google-cartographer.readthedocs.io/en/latest/index.html
+
+2.Cartographer_ros  https://google-cartographer-ros.readthedocs.io/en/latest/index.html
+
 Cartographer can be seen as two separate, but related systems. The first one is local SLAM (sometimes also called frontend). Its job is to build a locally consistent set of submaps and tie them together, but it will drift over time. Most of its options can be found in trajectory_builder_2d.lua for 2D and trajectory_builder_3d.lua for 3D.
 
 The other system is global SLAM (sometimes called the backend). It runs in background threads and its main job is to find loop closure constraints. It does that by scan-matching scans against submaps. It also incorporates other sensor data to get a higher level view and identify the most consistent global solution. In 3D, it also tries to find the direction of gravity. Most of its options can be found in pose_graph.lua
