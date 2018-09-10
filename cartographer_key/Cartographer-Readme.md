@@ -119,8 +119,15 @@ https://blog.csdn.net/u010811078/article/details/61200060 (in Chinese)
 # How to save the map and get the trajectory?
 rosrun map_server map_saver -f xxxmap
 
+For trajectory,it's still a big problem. 
+According to the instruction here https://github.com/googlecartographer/cartographer_ros/issues/332, there's once ( before June 2017) a simple command to do this job by processing .pb file
+
+However, now cartographer only supports .pbstream compressed file which includes all the pose graphs and other essential information. It is said that only by using assetswriter along with C programming can we output trajectory in formatted form such as txt or csv. Unfortunately, I failed to figure out how to accomplish this. (By the way, I can use some model assetswriter launch file to output the final pointcloud in ply or pcd format as well as the awesome Xray map, which even include trajectory)
+
+The workaround is to
 
 ------------------------------------------------------------------------------------------------------
+
 
 # Tuning parameters
 Some of this part should refer to offical readme file provided by Google:  https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
@@ -255,3 +262,14 @@ https://blog.csdn.net/nksjc/article/details/78927099
  
 
   ## For 3D Cartographer
+  I think there's no much difference between 2D and 3D cartographer
+  Only a few tips.
+  
+  3D Cartographer must have IMU data as input.  
+  
+
+
+
+# Realtime practice
+for realtime practice on jackal, you can add the move_base node to the launch file so you can accomplish SPLAM. That's really a cool thing to play.
+
