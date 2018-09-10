@@ -215,7 +215,7 @@ https://blog.csdn.net/nksjc/article/details/78927099
     trajectory_publish_period_sec = 30e-3, --Originally 20e-3
     rangefinder_sampling_ratio = 1.,
     odometry_sampling_ratio = 0.1, --Originally 0.5.
-    --In my opinion, You need to set it to be 0.1 or you will meet some check failed:data.time>std::prev error but I don't know why.
+    --In my opinion, You need to set it to be 0.1 or you will meet some check failed:data.time>std::prev error but I don't know why.[Sometimes this problem is due to the wrong version of ros (indigo instead of kinetic)]
     fixed_frame_pose_sampling_ratio = 1., --0.5
     imu_sampling_ratio = 1.,
     landmarks_sampling_ratio = 1.,
