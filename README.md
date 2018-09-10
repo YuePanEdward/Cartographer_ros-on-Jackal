@@ -12,3 +12,5 @@ Include
         5.Rtabmap
         
         6.ORBSLAM
+        
+        7.Some tips about Jackal
