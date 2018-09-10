@@ -134,9 +134,17 @@ rosrun map_server map_saver -f xxxmap
 For trajectory,it's still a big problem. 
 According to the instruction here https://github.com/googlecartographer/cartographer_ros/issues/332, there's once ( before June 2017) a simple command to do this job by processing .pb file
 
-However, now cartographer only supports .pbstream compressed file which includes all the pose graphs and other essential information. It is said that only by using assetswriter along with C programming can we output trajectory in formatted form such as txt or csv. Unfortunately, I failed to figure out how to accomplish this. (By the way, I can use some model assetswriter launch file to output the final pointcloud in ply or pcd format as well as the awesome Xray map, which even include trajectory)
+However, now cartographer only supports .pbstream compressed file which includes all the pose graphs and other essential information. It is said that only by using assetswriter along with C programming can we output trajectory in formatted form such as txt or csv. Unfortunately, I failed to figure out how to accomplish this. 
 
-The workaround is to
+By the way, I can use some assetswriter launch files to output the final pointcloud in ply or pcd format as well as the awesome Xray map, which even include trajectory （not in formatted form)
+
+> #Launch the 3D offline demo.
+> roslaunch cartographer_ros offline_backpack_3d.launch bag_filenames:=~/...bag
+> #Then the pose graph file .pbstream would be output in the same folder as the original bag file
+> #Launch assets_writer
+> roslaunch cartographer_ros assets_writer_backpack_3d.launch bag_filenames:=~/...bag   pose_graph_filename:=~/...bag.pbstream
+
+Another workaround is to use the hector trajectory server.
 
 ------------------------------------------------------------------------------------------------------
 
@@ -278,7 +286,7 @@ https://blog.csdn.net/nksjc/article/details/78927099
   Only a few tips.
   
   3D Cartographer must have IMU data as input.  
-  
+   
 
 
 
