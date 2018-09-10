@@ -145,6 +145,11 @@ By the way, I can use some assetswriter launch files to output the final pointcl
 > roslaunch cartographer_ros assets_writer_backpack_3d.launch bag_filenames:=~/...bag   pose_graph_filename:=~/...bag.pbstream
 
 Another workaround is to use the hector trajectory server.
+However, the trajectory may has some jump since it only aquire the transform between base_link frame and map frame.
+As the map would update and improve itself after each submap in cartographer, the trajectory may have some problem.
+How to exstract trajectory [nav_msg/path/pose[]/pose] is another issue.
+
+
 
 ------------------------------------------------------------------------------------------------------
 
