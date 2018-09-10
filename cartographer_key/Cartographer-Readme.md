@@ -139,10 +139,15 @@ However, now cartographer only supports .pbstream compressed file which includes
 By the way, I can use some assetswriter launch files to output the final pointcloud in ply or pcd format as well as the awesome Xray map, which even include trajectory （not in formatted form)
 
 > #Launch the 3D offline demo.
+
 > roslaunch cartographer_ros offline_backpack_3d.launch bag_filenames:=~/...bag
+
 > #Then the pose graph file .pbstream would be output in the same folder as the original bag file
+
 > #Launch assets_writer
-> roslaunch cartographer_ros assets_writer_backpack_3d.launch bag_filenames:=~/...bag   pose_graph_filename:=~/...bag.pbstream
+
+> roslaunch cartographer_ros assets_writer_backpack_3d.launch bag_filenames:=~/...bag pose_graph_filename:=~/...bag.pbstream
+
 
 Another workaround is to use the hector trajectory server.
 However, the trajectory may has some jump since it only aquire the transform between base_link frame and map frame.
