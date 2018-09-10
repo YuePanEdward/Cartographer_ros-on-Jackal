@@ -154,10 +154,24 @@ However, the trajectory may has some jump since it only aquire the transform bet
 As the map would update and improve itself after each submap in cartographer, the trajectory may have some problem.
 How to exstract trajectory [nav_msg/path/pose[]/pose] is another issue.
 
+Add these to the launch file
+
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" output="screen">
+    <param name="target_frame_name" type="string" value="/map" />
+    <param name="source_frame_name" type="string" value="/base_link" />
+    <param name="trajectory_update_rate" type="double" value="2" />
+    <param name="trajectory_publish_rate" type="double" value="0.1" />
+    </node>
 
 
 ------------------------------------------------------------------------------------------------------
+# Launch file remap
 
+    <remap from="points2" to="/velodyne_points"/>
+    <remap from="laser" to="/scan"/>
+    <remap from="odom" to="/odometry/ekf_wo_kvh"/>
+    <remap from="imu" to="/kvh_1750_imu/imu"/>
+    
 
 # Tuning parameters
 Some of this part should refer to offical readme file provided by Google:  https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
