@@ -322,3 +322,7 @@ To save sensor inputs as a rosbag, you can use
             rosbag record out /velodeyne_points /kvh_imu/imu/data /jackal_localization/odometry ...
  
 Then you can run cartographer offline and it would be easier for you to tune paramters.
+
+# Some Results
+![alt text]({{ site.baseurl }}/assets/o_MCE1.png "outdoor_Xray_map")
+![alt text]({{ site.baseurl }}/assets/i_MCE1.png "indoor_Xray_map")
