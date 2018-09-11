@@ -317,3 +317,8 @@ https://blog.csdn.net/nksjc/article/details/78927099
 # Realtime practice
 for realtime practice on jackal, you can add the move_base node to the launch file so you can accomplish SPLAM. That's really a cool thing to play.
 
+To save sensor inputs as a rosbag, you can use 
+          
+            rosbag record out /velodeyne_points /kvh_imu/imu/data /jackal_localization/odometry ...
+ 
+Then you can run cartographer offline and it would be easier for you to tune paramters.
