@@ -3,8 +3,8 @@
   
   <!--SLAM programme-->
   <!--Rtabmap -->
-  <include file="$(find rtabmap_ros)/launch/mapping_vo.launch"/>     <!--Rtabmap Mapping mode -->
-  <!--include file="$(find rtabmap_ros)/launch/localization_wo_kvh.launch"/-->  <!--Rtabmap Localization mode -->
+  <include file="$(find rtabmap_ros)/launch/mapping_vo.launch"/>     <!--Rtabmap Mapping mode: choice 1.vo 2.wo_imu 3.wo_kvh-->
+  <!--include file="$(find rtabmap_ros)/launch/localization_wo_kvh.launch"/-->  <!--Rtabmap Localization mode: choice 1.vo 2.wo_imu 3.wo_kvh -->
 
   
   <!--Cartographer: Choices{1.vlp16-imu3d-wo-kvh 2.vlp16-imu3d-wo-kvh 3.vlp16-imu2d-wo-kvh 4.vlp16-imu2d-wo-kvh} -->
