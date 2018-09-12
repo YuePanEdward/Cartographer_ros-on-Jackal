@@ -1,0 +1,41 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+  
+  <!--SLAM programme-->
+  <!--Rtabmap -->
+  <include file="$(find rtabmap_ros)/launch/mapping_vo.launch"/>     <!--Rtabmap Mapping mode -->
+  <!--include file="$(find rtabmap_ros)/launch/localization_wo_kvh.launch"/-->  <!--Rtabmap Localization mode -->
+
+  
+  <!--Cartographer: Choices{1.vlp16-imu3d-wo-kvh 2.vlp16-imu3d-wo-kvh 3.vlp16-imu2d-wo-kvh 4.vlp16-imu2d-wo-kvh} -->
+  <!--include file="$(find cartographer_ros)/launch/vlp16-imu3d-wo-kvh.launch" /--> 
+  <!--node name="cartographer_rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_3d.rviz" /-->
+
+  
+
+  <!-- EKF: filtered odom-->
+  <!--Choose from them -->
+  <include file="$(find jackal_control)/launch/ekf_wo_kvh.launch"/> <!--WO+KVH-->
+  <!--include file="$(find jackal_control)/launch/ekf_wo_imu.launch"/--> <!--WO+IMU-->
+
+  <!--EKF-GLOBAL-->
+  <!--include file="$(find jackal_control)/launch/ekf_global.launch"/--> 
+  
+  <!--Get pose by hector_trajectory_server-->
+  <!--node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" output="screen">
+    <param name="target_frame_name" type="string" value="/map" />
+    <param name="source_frame_name" type="string" value="/base_link" />
+    <param name="trajectory_update_rate" type="double" value="2" />
+    <param name="trajectory_publish_rate" type="double" value="0.1" />
+  </node-->
+
+  <!--Play ROS Bag-->
+  <node pkg="rosbag" type="play" name="playbag" args="--clock $(arg bag_filename) -r 2"/> 
+  
+
+</launch> 
+
+
+<!--How to launch ?-->
+<!--roslaunch rtabmap_ros demo_compare_slam.launch bag_filename:=/home/edward/xxx.bag-->
